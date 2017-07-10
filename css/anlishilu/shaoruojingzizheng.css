@@ -1,0 +1,16 @@
+.contentleftnews{position: relative;margin-top: 40px;margin-left: 0px;width: 874.4px;height: 134px;}
+.contentleftnewsimg{position: relative;margin-top: 0px;float: left;width: 190px;height: 134px;}
+.contentleftnew{position: relative;margin-left: 20px;margin-right: 20px;float: left;width: 644.4px;height: 134px;}
+.contentleftnew_line p{font-weight: bold;}
+.contentleftnew h4{color: #990066;line-height: 28px;font-size: 16px;}
+.contentleftnew p{line-height: 28px;font-size: 16px;}
+.contentleftnews_text{position: relative;margin-left: 0px;margin-top: 0px;width: 644.4px;height: 114px;}
+.contentleftnew_line{width: 340px;height: 20px;font-size: 14px;}
+.contentleftnew_line a{color: black;}
+.contentleftnew_text a{color:#990066;}
+.contentleftnew_text h4{position: absolute;bottom: 0px;right: 0px;}
+.contentleftnew_text span{font-size: 13px;line-height: 28px;} 
+.contentleft_footer{text-align: center;}
+.contentleft_footer p{float: left; font-size: 14px;line-height: 18px;}
+.contentleft_footer span{display: block;position: relative;margin-left: 250px;margin-top: 30px;}
+.contentleft_footer li{float: left;border: 1px solid #999;margin-left: 10px;}

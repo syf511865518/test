@@ -1,0 +1,929 @@
+<!DOCTYPE html">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>妇保</title>
+<link href="css/common.css" type="text/css" rel="stylesheet"/>
+<link href="css/style.css" type="text/css" rel="stylesheet"/>
+<script type="text/javascript">
+var cssdropdown={
+disappeardelay: 250, 
+disablemenuclick: false, 
+enableswipe: 1, 
+enableiframeshim: 1, 
+dropmenuobj: null, ie: document.all, firefox: document.getElementById&&!document.all, swipetimer: undefined, bottomclip:0,
+
+getposOffset:function(what, offsettype){
+var totaloffset=(offsettype=="left")? what.offsetLeft : what.offsetTop;
+var parentEl=what.offsetParent;
+while (parentEl!=null){
+totaloffset=(offsettype=="left")? totaloffset+parentEl.offsetLeft : totaloffset+parentEl.offsetTop;
+parentEl=parentEl.offsetParent;
+}
+return totaloffset;
+},
+
+swipeeffect:function(){
+if (this.bottomclip<parseInt(this.dropmenuobj.offsetHeight)){
+this.bottomclip+=10+(this.bottomclip/10) 
+//this.dropmenuobj.style.clip="rect(0 auto "+this.bottomclip+"px 0)"
+}
+else
+return
+this.swipetimer=setTimeout("cssdropdown.swipeeffect()",10)
+},
+
+showhide:function(obj, e){
+if (this.ie || this.firefox)
+this.dropmenuobj.style.left=this.dropmenuobj.style.top="-500px"
+if (e.type=="click" && obj.visibility==hidden || e.type=="mouseover"){
+if (this.enableswipe==1){
+if (typeof this.swipetimer!="undefined")
+clearTimeout(this.swipetimer)
+//obj.clip="rect(0 auto 0 0)" 
+this.bottomclip=0
+this.swipeeffect()
+}
+obj.visibility="visible"
+}
+else if (e.type=="click")
+obj.visibility="hidden"
+},
+
+iecompattest:function(){
+return (document.compatMode && document.compatMode!="BackCompat")? document.documentElement : document.body
+},
+
+clearbrowseredge:function(obj, whichedge){
+var edgeoffset=0
+if (whichedge=="rightedge"){
+var windowedge=this.ie && !window.opera? this.iecompattest().scrollLeft+this.iecompattest().clientWidth-15 : window.pageXOffset+window.innerWidth-15
+this.dropmenuobj.contentmeasure=this.dropmenuobj.offsetWidth
+if (windowedge-this.dropmenuobj.x < this.dropmenuobj.contentmeasure)  
+edgeoffset=this.dropmenuobj.contentmeasure-obj.offsetWidth
+}
+else{
+var topedge=this.ie && !window.opera? this.iecompattest().scrollTop : window.pageYOffset
+var windowedge=this.ie && !window.opera? this.iecompattest().scrollTop+this.iecompattest().clientHeight-15 : window.pageYOffset+window.innerHeight-18
+this.dropmenuobj.contentmeasure=this.dropmenuobj.offsetHeight
+if (windowedge-this.dropmenuobj.y < this.dropmenuobj.contentmeasure){ 
+edgeoffset=this.dropmenuobj.contentmeasure+obj.offsetHeight
+if ((this.dropmenuobj.y-topedge)<this.dropmenuobj.contentmeasure) 
+edgeoffset=this.dropmenuobj.y+obj.offsetHeight-topedge
+}
+}
+return edgeoffset
+},
+
+dropit:function(obj, e, dropmenuID){
+if (this.dropmenuobj!=null) 
+	this.dropmenuobj.style.visibility="hidden" 
+this.clearhidemenu()
+if (this.ie||this.firefox){
+obj.onmouseout=function(){cssdropdown.delayhidemenu()}
+obj.onclick=function(){return !cssdropdown.disablemenuclick} 
+this.dropmenuobj=document.getElementById(dropmenuID)
+if(!this.dropmenuobj) return;
+this.dropmenuobj.onmouseover=function(){cssdropdown.clearhidemenu()}
+this.dropmenuobj.onmouseout=function(e){cssdropdown.dynamichide(e)}
+this.dropmenuobj.onclick=function(){cssdropdown.delayhidemenu()}
+this.showhide(this.dropmenuobj.style, e)
+this.dropmenuobj.x=this.getposOffset(obj, "left")
+this.dropmenuobj.y=this.getposOffset(obj, "top")
+this.dropmenuobj.style.left=this.dropmenuobj.x-this.clearbrowseredge(obj, "rightedge")+"px"
+this.dropmenuobj.style.top=this.dropmenuobj.y-this.clearbrowseredge(obj, "bottomedge")+obj.offsetHeight+1+"px"
+this.positionshim() 
+}
+},
+
+positionshim:function(){ 
+if (this.enableiframeshim && typeof this.shimobject!="undefined"){
+if (this.dropmenuobj.style.visibility=="visible"){
+this.shimobject.style.width=this.dropmenuobj.offsetWidth+"px"
+this.shimobject.style.height=this.dropmenuobj.offsetHeight+"px"
+this.shimobject.style.left=this.dropmenuobj.style.left
+this.shimobject.style.top=this.dropmenuobj.style.top
+}
+this.shimobject.style.display=(this.dropmenuobj.style.visibility=="visible")? "block" : "none"
+}
+},
+
+hideshim:function(){
+if (this.enableiframeshim && typeof this.shimobject!="undefined")
+this.shimobject.style.display='none'
+},
+
+contains_firefox:function(a, b) {
+while (b.parentNode)
+if ((b = b.parentNode) == a)
+return true;
+return false;
+},
+
+dynamichide:function(e){
+var evtobj=window.event? window.event : e
+if (this.ie&&!this.dropmenuobj.contains(evtobj.toElement))
+this.delayhidemenu()
+else if (this.firefox&&e.currentTarget!= evtobj.relatedTarget&& !this.contains_firefox(evtobj.currentTarget, evtobj.relatedTarget))
+this.delayhidemenu()
+},
+
+delayhidemenu:function(){
+this.delayhide=setTimeout("cssdropdown.dropmenuobj.style.visibility='hidden'; cssdropdown.hideshim()",this.disappeardelay) 
+},
+
+clearhidemenu:function(){
+if (this.delayhide!="undefined")
+clearTimeout(this.delayhide)
+},
+
+startchrome:function(){
+for (var ids=0; ids<arguments.length; ids++){
+var menuitems=document.getElementById(arguments[ids]).getElementsByTagName("a")
+for (var i=0; i<menuitems.length; i++){
+if (menuitems[i].getAttribute("rel")){
+var relvalue=menuitems[i].getAttribute("rel")
+menuitems[i].onmouseover=function(e){
+var event=typeof e!="undefined"? e : window.event
+cssdropdown.dropit(this,event,this.getAttribute("rel"))
+}
+}
+}
+}
+if (window.createPopup && !window.XmlHttpRequest){ 
+document.write('<IFRAME id="iframeshim"  src="" style="display: none; left: 0; top: 0; z-index: 90; position: absolute; filter: progid:DXImageTransform.Microsoft.Alpha(style=0,opacity=0)" frameBorder="0" scrolling="no"></IFRAME>')
+this.shimobject=document.getElementById("iframeshim") 
+}
+}
+
+}
+</script>
+
+</div>
+</head>
+
+<body>
+
+<!-- 头部 ------------>
+<div class="header">
+	<div class="header_mid white">
+		<span class="fl">门诊时间：8:30~17:30（周一至周六）</span>
+		<span class="fr">
+			<ul>
+				<li><a href="#">手机站</a></li>
+				<li><a href="#">丨微信公众号</a>
+				<li><a href="#">丨微博</a></li>
+			</ul>
+		</span>
+	</div>
+</div>
+<div style="clear: both;"></div>
+
+<!-- 脸 ------------>
+
+<div class="cheek">
+	<div class="cheek_img">
+		<img src="./images/img_01.gif">
+	</div>
+	<div class="cheek_text f-s18">
+		<p>昆明市妇幼保健院生殖医学中心</p>
+	</div>
+
+	<div class="cheek_right">
+		<span class="fr f-s14">孕育热线：0871-88888888</span>
+		<p class="fr f-s14">生殖技术由 英国剑桥波恩 提供支持 丨</p>
+	</div>
+</div>
+<div style="clear: both;"></div>
+<!-- banner图 ------------>
+
+<div class="banner">
+    <img src="./images/img_02.gif">
+    <div class="nav f-s16" id="nva">
+   		<ul>
+   			<li id="nav_lifirst"><a href="#">首页</a></li>
+    		<li id="a1" class="li">    
+    			<a class="" href="#" rel="dropmenu1" title="中心概况">中心概况</a>
+        	</li>
+    		<li id="a2" class="li">
+    			<a class="" href="#" rel="dropmenu2" title="中心动态">中心动态</a>
+    		</li>
+    		<li id="a3" class="li">
+     			<a class="" href="#" rel="dropmenu3" title="专家团队">专家团队</a>  			
+    		</li>
+    		<li id="a4" class="li">
+    			<a class="" href="#" rel="dropmenu4" title="医生出诊信息">医生出诊信息</a>
+    		</li>
+    		<li id="a5" class="li">
+    		    <a class="" href="#" rel="dropmenu5" title="英式诊疗">英式诊疗</a>	
+    		</li>
+    		<li id="a6" class="li">
+    		    <a class="" href="#" rel="dropmenu6" title="案例实录">案例实录</a>
+    		</li>
+    		<li id="a7" class="li">
+    		    <a class="" href="#" rel="dropmenu7" title="试管婴儿百科">试管婴儿百科</a>		
+    		</li>
+    		<li id="a8" class="li">
+    			<a class="" href="#" rel="dropmenu8" title="视频分享">视频分享</a>
+    		</li>
+   			<li id="a9" class="li">
+   				<a class="" href="#" rel="dropmenu9" title="中心概况">常见问题答疑</a>
+   			</li>
+    		<li id="a10" class="li">
+    			<a class="" href="#" rel="dropmenu10" title="中心概况">联系我们</a>	   		
+    		</li>
+    		<div style="clear: both;"></div>
+   		</ul>
+ 	</div>
+ 	<div class="nva2wrap">
+		<ul id="dropmenu1" class="dropMenu" >
+			<li>
+				<a href="./zhongxinhuanjing.html" title="中心介绍">中心介绍</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./boenshengzhi.html" title="波恩生殖">波恩生殖</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./shebeiyoushi.html" title="设备优势">设备优势</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./zhongxinhuanjing.html" title="中心环境">中心环境</a>
+			</li>
+		</ul>
+		<ul id="dropmenu2" class="dropMenu" style="top: 60px; left: 402px; visibility: hidden;">
+			<li>
+				<a href="./zhongxinxinwen.html" title="中心新闻">中心新闻</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./zhongxinhuodong.html" title="中心活动">中心活动</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./jingcaikepujiangzuo.html" title="精彩科普讲座">精彩科普讲座</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./meitibaodao.html" title="媒体报道">媒体报道</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./guojilingyufaxian.html" title="国际领域发现">国际领域发现</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./xinwenxiangqingye.html" title="新闻详情页">新闻详情页</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./yuangongfengcai.html" title="员工风采">员工风采</a>
+			</li>
+		</ul>
+		<ul id="dropmenu3" class="dropMenu" style="top: 60px; left: 402px; visibility: hidden;">
+			<li>
+				<a href="./guojizhuanjia.html" title="国际专家">国际专家</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./guoneizhuanjia.html" title="国内专家">国内专家</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./zhuanjiaxiangqingye.html" title="专家详情页">专家详情页</a>
+			</li>
+		</ul>
+		<ul id="dropmenu4" class="dropMenu" style="top: 60px; left: 402px; visibility: hidden;">
+			<li>
+				<a href="./yishengchuzhenxinxixiangqing.html" title="医生出诊信息详情">医生出诊信息详情</a>
+			</li>
+		</ul>
+		<ul id="dropmenu5" class="dropMenu" style="top: 60px; left: 402px; visibility: hidden;">
+			<li>
+				<a href="./mianzhen.html" title="60分钟超长面诊">60分钟超长面诊</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./gexingfangan.html" title="个性化方案制定">个性化方案制定</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./zhiliangguankong.html" title="24小时质量管控">24小时质量管控</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./jueduiyinsibaohu.html" title="绝对隐私保护">绝对隐私保护</a>
+			</li>
+		</ul>
+		<ul id="dropmenu6" class="dropMenu" style="top: 60px; left: 402px; visibility: hidden;">
+			<li>
+				<a href="./shuluanguan.html" title="输卵管堵塞、粘连、切除">输卵管堵塞、粘连、切除</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./duonangluanchaozonghezheng.html" title="多囊卵巢综合症">多囊卵巢综合症</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./zigongneimoyiweizheng.html" title="子宫内膜异位症">子宫内膜异位症</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./nanfangshaoruojingzizheng.html" title="男方少弱精子症">男方少弱精子症</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./sijingwujingzheng.html" title="死精、无精症">死精、无精症</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./haoyunfenxiang.html" title="好孕分享">好孕分享</a>
+			</li>
+		</ul>
+		<ul id="dropmenu7" class="dropMenu" style="top: 60px; left: 402px; visibility: hidden;">
+			<li>
+				<a href="./nvxingbuyun.html" title="女性不孕">女性不孕</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./nanxingbuyu.html" title="男性不育">男性不育</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./shiguanyinger.html" title="试管婴儿">试管婴儿</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./rengongshoujing.html" title="人工授精">人工授精</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./xiangqingye.html" title="详情页">详情页</a>
+			</li>
+		</ul>
+		<ul id="dropmenu8" class="dropMenu" style="top: 60px; left: 402px; visibility: hidden;">
+			<li>
+				<a href="./giddon.html" title="Giddon有话讲">Giddon有话讲</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./zhuanjiadayi.html" title="专家答疑">专家答疑</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./zhiboshilu.html" title="直播实录">直播实录</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./shipinfenxiangxiangqing.html" title="视频分享详情">视频分享详情</a>
+			</li>
+		</ul>
+		<ul id="dropmenu9" class="dropMenu" style="top: 60px; left: 402px; visibility: hidden;">
+			<li>
+				<a href="./shiguanyingerjiuzhenqian.html" title="试管婴儿就诊前">试管婴儿就诊前</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./shiguanyingerjiuzhenzhong.html" title="试管婴儿就诊中">试管婴儿就诊中</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./shiguanyingerjiuzhenhou.html" title="试管婴儿就诊后">试管婴儿就诊后</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./changjianwentidayixiangqingye.html" title="常见问题答疑详情页">常见问题答疑详情页</a>
+			</li>
+		</ul>
+		<ul id="dropmenu10" class="dropMenu" style="top: 60px; left: 402px; visibility: hidden;">
+			<li>
+				<a href="./zixunxuzhi.html" title="咨询须知">咨询须知</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./jiuzhenxuzhi.html" title="就诊须知">就诊须知</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./jiuzhenliucheng.html" title="就诊流程">就诊流程</a>
+			</li>
+			<span style="display: block; float: left; line-height: 28px; padding-top: 2px;">| </span>
+			<li>
+				<a href="./chengcheluxian.html" title="乘车路线">乘车路线</a>
+			</li>
+		</ul>
+		<script type="text/javascript">
+cssdropdown.startchrome("nva")
+</script>
+<script>
+
+                $("#dropmenu1").mouseover(function () {
+                    $("#a1").addClass("li1");
+                })
+                $("#dropmenu1").mouseout(function () {
+                    $("#a1").removeClass("li1").addClass("li");
+                })
+                $("#dropmenu2").mouseover(function () {
+                    $("#a2").addClass("li1");
+                })
+                $("#dropmenu2").mouseout(function () {
+                    $("#a2").removeClass("li1").addClass("li");
+                })
+                $("#dropmenu3").mouseover(function () {
+                    $("#a3").addClass("li1");
+                })
+                $("#dropmenu3").mouseout(function () {
+                    $("#a3").removeClass("li1").addClass("li");
+                })
+                $("#dropmenu4").mouseover(function () {
+                    $("#a4").addClass("li1");
+                })
+                $("#dropmenu4").mouseout(function () {
+                    $("#a4").removeClass("li1").addClass("li");
+                })
+                $("#dropmenu5").mouseover(function () {
+                    $("#a5").addClass("li1");
+                })
+                $("#dropmenu5").mouseout(function () {
+                    $("#a5").removeClass("li1").addClass("li");
+                })
+                $("#dropmenu6").mouseover(function () {
+                    $("#a6").addClass("li1");
+                })
+                $("#dropmenu6").mouseout(function () {
+                    $("#a6").removeClass("li1").addClass("li");
+                })
+                 $("#dropmenu7").mouseover(function () {
+                    $("#a7").addClass("li1");
+                })
+                $("#dropmenu7").mouseout(function () {
+                    $("#a7").removeClass("li1").addClass("li");
+                })
+                 $("#dropmenu8").mouseover(function () {
+                    $("#a8").addClass("li1");
+                })
+                $("#dropmenu8").mouseout(function () {
+                    $("#a8").removeClass("li1").addClass("li");
+                })
+                 $("#dropmenu9").mouseover(function () {
+                    $("#a9").addClass("li1");
+                })
+                $("#dropmenu9").mouseout(function () {
+                    $("#a9").removeClass("li1").addClass("li");
+                })
+                 $("#dropmenu10").mouseover(function () {
+                    $("#a10").addClass("li1");
+                })
+                $("#dropmenu10").mouseout(function () {
+                    $("#a10").removeClass("li1").addClass("li");
+                })
+            
+</script>
+		<div style="clear: both;"></div>
+	</div>
+</div>
+<!-- 项目 -->
+
+<div class="project">
+	<div class="project_img f-s22">
+		<img  src="./images/img_03.gif">
+		<p>CORE TECHNOLOGY</p>
+		<h2>生殖技术由&nbsp;英国剑桥波恩&nbsp;提供支持</h2>
+	</div>
+
+	<div class="project_cases">
+		<div class="project_case">
+			<img src="./images/img_04.gif">
+			<span>输卵管问题丨多囊卵巢丨子宫内膜异位症丨习惯性流产丨排卵早衰</span>
+		</div>	
+		<div class="project_case">
+			<img src="./images/img_05.gif">
+			<span>少精弱精丨精索静脉曲张丨睾丸异常丨精子畸形丨男性不育</span>
+		</div>
+		<div class="project_case">
+			<img src="./images/img_06.gif">
+			<span>输卵管问题丨多囊卵巢丨子宫内膜异位症丨习惯性流产丨排卵早衰</span>
+		</div>
+		<div class="project_caseright">
+			<img src="./images/img_07.gif">
+			<span>少精弱精丨精索静脉曲张丨睾丸异常丨精子畸形丨男性不育</span>
+		</div>		
+	</div>
+</div>
+
+<!-- 新闻 -->
+<div class="newsbackground">
+	<div class="news">
+		<div class="newsleft">
+			<div class="newsleft_img">
+				<img src="./images/img_08.gif">
+			</div>
+			<div class="newsleft_textbackground">
+				<div class="newsleft_text">
+					<h4 class="f-s18"><a href="#">新闻中心</a>丨<a href="#">国际领域发现</a></h4>
+					<h3 class="f-s22">树立特色专科品牌&nbsp;我院举行专科优势暨特色</h3>
+					<p><a id="a2" href="#">9月29日，医院举行专科优势暨特色诊疗技术交流会。各个科室的负责人和业务骨干在交流会上进行了发言。【详情】</a></p>
+					<hr/>
+					<ul>
+						<li><a  href="#"><span class="fl">我院第二场业务技能知识讲座开讲获好评</span><span class="fr">2017-01-28</span></a></li>
+						<li><a  href="#"><span class="fl">我院第二场业务技能知识讲座开讲获好评</span><span class="fr">2017-01-28</span></a></li>
+						<li><a  href="#"><span class="fl">我院第二场业务技能知识讲座开讲获好评</span><span class="fr">2017-01-28</span></a></li>
+						<li><a  href="#"><span class="fl">我院第二场业务技能知识讲座开讲获好评</span><span class="fr">2017-01-28</span></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+
+		<div class="newsright">
+			<img src="./images/img_09.gif">
+			<a href="#"><div class="newsright_img">
+				<img  src="./images/img_10.gif">
+				<p class="f-s18">QQ咨询</p>
+			</div></a>
+			<a href="#"><div class="newsright_img">
+				<img src="./images/img_11.gif">
+				<p class="f-s18">在线咨询</p>
+			</div></a>
+		</div>
+	</div>
+</div>
+
+<!-- 服务 ---------->
+<div class="serviceone">
+	<div class="service_text">
+		<h1 class="f-s22">SERVICE GUARANTEE</h1>
+		<h5 class="f-s16">英式诊疗&nbsp;严谨安全</h5>
+	</div>
+	<div class="service">
+		<div class="service_imgleft">
+			<img src="./images/img_12.gif">
+			<h2 class="f-s16">60分钟至超长面诊</h2>
+			<hr />
+			<p>依托企业快速发展，辐射全中国，立志成为行业最具影响力的企业</p>	
+		</div>		
+
+		<div class="service_img">
+			<img src="./images/img_13.gif">
+			<h2 class="f-s16">个性化方案订制</h2>
+			<hr />
+			<p>与我们一起，携手共赢，为社会、股东、员工创造更多价值</p>	
+		</div>		
+
+		<div class="service_img">
+			<img src="./images/img_14.gif">
+			<h2 class="f-s16">24小时质量管控</h2>
+			<hr />
+			<p>广阔的发展平台、优厚的福利待遇、和谐的员工关系，加入我们，实现您自己的人生价值</p>	
+		</div>		
+
+		<div class="service_img">
+			<img src="./images/img_15.gif">
+			<h2 class="f-s16">绝对隐私保护</h2>
+			<hr />
+			<p>依托企业快速发展，辐射全中国，立志成为行业最具影响力的企业</p>	
+		</div>		
+	</div>	
+</div>
+
+<div class="servicetwo">
+	<div class="service_text">
+		<h1 class="f-s22">SERVICE GUARANTEE</h1>
+		<h5 class="f-s16">卓越的技术保证医疗质量</h5>
+	</div>
+	<div class="service">
+		<div class="service_imgleft">
+			<img src="./images/img_16.gif">
+			<h2 class="f-s16">国际专家</h2>
+			<hr />
+			<p>依托企业快速发展，辐射全中国，立志成为行业最具影响力的企业</p>	
+		</div>		
+
+		<div class="service_img">
+			<img src="./images/img_17.gif">
+			<h2 class="f-s16">专家团队</h2>
+			<hr />
+			<p>与我们一起，携手共赢，为社会、股东、员工创造更多价值</p>	
+		</div>		
+
+		<div class="service_img">
+			<img src="./images/img_18.gif">
+			<h2 class="f-s16">胚胎团队</h2>
+			<hr />
+			<p>广阔的发展平台、优厚的福利待遇、和谐的员工关系，加入我们，实现您自己的人生价值</p>	
+		</div>		
+
+		<div class="service_img">
+			<img src="./images/img_19.gif">
+			<h2 class="f-s16">护理团队</h2>
+			<hr />
+			<p>依托企业快速发展，辐射全中国，立志成为行业最具影响力的企业</p>	
+		</div>		
+	</div>	
+</div>
+
+<div class="servicethree">
+	<div class="service_text">
+		<h1 class="f-s22">SERVICE GUARANTEE</h1>
+		<h5 class="f-s16">这些，或许对你的就诊有帮助</h5>
+	</div>
+	<div class="service">
+		<div class="service_imgleft">
+			<img src="./images/img_16.gif">
+		</div>		
+
+		<div class="service_img">
+			<img src="./images/img_17.gif">
+		</div>		
+
+		<div class="service_img">
+			<img src="./images/img_18.gif">
+		</div>		
+
+		<div class="service_img">
+			<img src="./images/img_19.gif">
+		</div>		
+	</div>	
+</div>
+
+<!---- 资讯 ---------->
+<div class="information">
+	<div class="information_header">
+		<h1 class="f-s22">NEWS</h1>
+		<h5 class="f-s16">最新资讯</h5>
+	</div>
+	
+	<div class="information_news">
+		<div class="subnav f-s16">
+			<ul>
+				<li><a href="#">试管婴儿</a></li>
+				<li><a href="#">试管婴儿适应症</a></li>
+				<li><a href="#">试管婴儿费用</a></li>
+				<li><a href="#">试管婴儿成功率</a></li>
+				<li><a href="#">试管婴儿检查项目</a></li>
+				<li><a href="#">试管婴儿过程</a></li>
+			</ul>			
+		</div>
+		<div class="information_textbgd">
+			<div class="information_text">
+				<div class="information_left">
+					<img src="./images/img_20.gif">
+				</div>
+				<div class="information_right">
+					<ul>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="information_text" id="information_textright">
+				<div class="information_left">
+					<img src="./images/img_21.gif">
+				</div>
+				<div class="information_right">
+					<ul>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>			
+	</div>
+
+	<div class="information_news">
+		<div class="subnav f-s16">
+			<ul>
+				<li><a href="#">试管婴儿</a></li>
+				<li><a href="#">试管婴儿适应症</a></li>
+				<li><a href="#">试管婴儿费用</a></li>
+				<li><a href="#">试管婴儿成功率</a></li>
+				<li><a href="#">试管婴儿检查项目</a></li>
+				<li><a href="#">试管婴儿过程</a></li>
+			</ul>			
+		</div>
+		<div class="information_textbgd">
+			<div class="information_text">
+				<div class="information_left">
+					<img src="./images/img_22.gif">
+				</div>
+				<div class="information_right">
+					<ul>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+					</ul>
+				</div>
+			</div>
+
+			<div class="information_text" id="information_textright">
+				<div class="information_left">
+					<img src="./images/img_23.gif">
+				</div>
+				<div class="information_right">
+					<ul>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+						<li><a href="#">我院第二场业务技能知识讲座开讲获</a></li>
+					</ul>
+				</div>
+			</div>
+		</div>			
+	</div>
+</div>
+<div style="clear: both;"></div>	
+
+<!------ 案例 -------->
+<div class="cases">
+	<div class="cases_header">	
+	</div>
+	<div class="casesleft">
+		<h1 class="f-s22">CASES</h1>
+		<h5 class="f-s16">案例实录</h5>
+		<img src="./images/img_24.gif">
+		<p><a href="#">9月29日，医院举行专科优势暨特色诊疗技术交流会。各个科室的负责人和业务骨干在交流会上进行了发言。[详情]</a></p>		
+	</div>
+	<div class="casesright">
+		<div class="caseright">
+			<div class="number">
+				<p>01</p>
+			</div>
+			<div class="caseright_text">		
+				<h3><a href="#"></a><span class="fl">瑞士寻美之旅</span></h3><p><span class="fr">2016-10-29</span></a></p>
+				<div style="clear: both;"></div>
+				<p>这里的山，云梦萦绕。这里的水，满江春意。这里的花，争相竞艳。云南古城之行，时时刻刻保持年轻的心态，健康...</p>
+			</div>	
+		</div>
+		<div class="caseright">
+			<div class="number">
+				<p>02</p>
+			</div>
+			<div class="caseright_text">
+				<h3><a href="#"></a><span class="fl">七彩云南之旅</span></h3><p><span class="fr">2016-10-29</span></a></p>
+				<div style="clear: both;"></div>
+				<p>这里的山，云梦萦绕。这里的水，满江春意。这里的花，争相竞艳。云南古城之行，时时刻刻保持年轻的心态，健康...</p>
+			</div>			
+		</div>       
+
+		<div class="caseright">
+			<div class="number">
+				<p>03</p>
+			</div>
+			<div class="caseright_text">
+				<h3><a href="#"></a><span class="fl">第三批赴日研修学员载誉归国</span></h3><p><span class="fr">2016-10-29</span></a></p>
+				<div style="clear: both;"></div>
+				<p>这里的山，云梦萦绕。这里的水，满江春意。这里的花，争相竞艳。云南古城之行，时时刻刻保持年轻的心态，健康...</p>
+			</div>	
+		</div>
+	</div>		
+</div>
+
+<!---- 问题 -------->
+<div class="problems">
+	<div class="problemsleft">
+		<img src="./images/img_25.gif">
+	</div>
+
+	<div class="problemsright">
+		<h1 class="f-s22">COMMON PROBLEMS</h1>
+		<h4 class="f-s16">常见问题</h4>
+
+
+		<div class="problem">
+				<img src="./images/img_26.gif">
+			<div class="problemtext">
+				<h3 class="f-s16">海外就医有哪些优势？</h3>
+				<p>出国看病可享受到最前沿的医疗技术，以美国为例，美国拥有许多世界上前沿的医学研究成果、资深优秀的医学专家...</p>
+			</div>
+		</div>
+			
+		<div class="problem">
+				<img src="./images/img_26.gif">
+			<div class="problemtext">
+			<h3 class="f-s16">自主出国看病与选择迪度医疗看病的区别？</h3>
+			<p>首先在甄选医院和医生时，迪度医疗会从众多的顶级医院和医生中，帮助患者选出最有效最合适的医院和医生；其次...</p>
+			</div>
+		</div>		
+	</div>
+</div>
+
+<!-- LOGO -->
+<div class="logo">
+	<div class="logoimg">
+		<a href="#"><img src="./images/img_27.gif"></a>
+		<a href="#"><img src="./images/img_28.gif"></a>
+	</div>
+</div>
+
+<!-- FOLLOW -->
+<div class="follow">
+	<div class="followright">
+		<img src="./images/img_29.gif">
+		<img src="./images/img_30.gif">	
+		<p class="f-s22">FOLLOW US</p>	
+	</div>
+</div>
+
+<!-- 底部 -->
+<div class="bottombackground">
+	<div class="bottom">
+	<div class="bottomleft">
+		<div class="tab f-s16">
+			<ul>
+				<li id="lileft">中心概况</li>
+				<li>中心动态</li>
+				<li>专家团队</li>
+				<li>医生出诊信息</li>
+				<li>英式疗法</li>
+				<li>案例实录</li>
+			</ul>
+		</div>
+		<div class="tab_one" id="lileft">
+			<ul>
+				<li>中心介绍</li>
+				<li>波恩生殖</li>
+				<li>设备优势</li>
+				<li>设备优势详情</li>
+			</ul>
+		</div>
+
+		<div class="tab_one">
+			<ul>
+				<li>中心新闻</li>
+				<li>中心活动</li>
+				<li>精彩科普讲座</li>
+				<li>媒体报道</li>
+				<li>国际领域发现</li>
+			</ul>
+		</div>
+
+		<div class="tab_one">
+			<ul>
+				<li>国际专家</li>
+				<li>国内专家</li>
+				<li>专家详情页</li>
+			</ul>
+		</div>
+
+		<div class="tab_one">
+			<ul>
+				<li>医生出诊信息详情</li>
+			</ul>
+		</div>
+
+		<div class="tab_one">
+			<ul>
+				<li>60分钟超长面诊</li>
+				<li>个性化质量管控</li>
+				<li>绝对隐私保护</li>
+			</ul>
+		</div>
+
+		<div class="tab_one">
+			<ul>
+				<li>输卵管堵塞</li>
+				<li>多囊卵巢综合症</li>
+				<li>子宫内膜异位症</li>
+				<li>男方少弱精子症</li>
+				<li>死精、无精症</li>
+			</ul>			
+		</div>
+	</div>
+
+	<div class="bottomright">
+		<div class="bottomright_text">
+			<h3 class="f-s16">服务热线：0871-88888888</h3>
+			<p>医院地址：云南省昆明市丹霞路2号</p>
+			<p>门诊热线：0871-88888888</p>
+			<p>点击查询来院路线</p>
+		</div>
+	</div>
+	</div>	
+</div>
+
+<!-- footer -->
+<div class="footerbackground">
+	<div class="footer">
+		<div class="footerleft">
+			<p>Copyright@2015-2018 All right reserved. 昆明市妇幼保健院生殖医学中心版权所有 云ICP备00000000号</p>		
+		</div>
+
+		<div class="footerright">
+			<a href="#">相关企业</a> /
+			<a href="#">友情链接</a>
+		</div>
+	</div>
+</div>
+</body>
+</html>
